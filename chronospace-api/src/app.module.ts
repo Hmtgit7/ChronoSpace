@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { BlogsModule } from './blogs/blogs.module';
 import { PublicModule } from './public/public.module';
 import { JobsModule } from './jobs/jobs.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -31,7 +32,6 @@ import { JobsModule } from './jobs/jobs.module';
       { name: 'medium', ttl: 60000, limit: 100 },
     ]),
 
-    // BullMQ Redis connection — reads from env via ConfigService
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -49,6 +49,7 @@ import { JobsModule } from './jobs/jobs.module';
     BlogsModule,
     PublicModule,
     JobsModule,
+    HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
