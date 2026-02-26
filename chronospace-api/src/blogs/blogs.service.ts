@@ -4,19 +4,25 @@ import {
   ForbiddenException,
   ConflictException,
 } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { generateSlug, generateUniqueSlug } from '../common/utils/slug.util';
+import { QUEUES, BLOG_JOBS } from '../common/constants/queue.constants';
+import type { GenerateSummaryJobData } from '../jobs/types/blog-job.types';
 
 @Injectable()
 export class BlogsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectQueue(QUEUES.BLOG) private readonly blogQueue: Queue,
+  ) {}
 
   async create(userId: string, dto: CreateBlogDto) {
     const baseSlug = generateSlug(dto.title);
 
-    // Check slug uniqueness; append short uid suffix on collision
     const existing = await this.prisma.blog.findUnique({
       where: { slug: baseSlug },
     });
@@ -25,7 +31,7 @@ export class BlogsService {
       ? generateUniqueSlug(dto.title, Date.now().toString(36))
       : baseSlug;
 
-    return this.prisma.blog.create({
+    const blog = await this.prisma.blog.create({
       data: {
         userId,
         title: dto.title,
@@ -42,11 +48,16 @@ export class BlogsService {
         isPublished: true,
         createdAt: true,
         updatedAt: true,
-        user: {
-          select: { id: true, username: true },
-        },
+        user: { select: { id: true, username: true } },
       },
     });
+
+    // Enqueue summary job if published on creation
+    if (blog.isPublished && !blog.summary) {
+      await this.enqueueSummaryJob(blog.id, blog.title, blog.content);
+    }
+
+    return blog;
   }
 
   async findAllByUser(userId: string) {
@@ -61,9 +72,7 @@ export class BlogsService {
         isPublished: true,
         createdAt: true,
         updatedAt: true,
-        _count: {
-          select: { likes: true, comments: true },
-        },
+        _count: { select: { likes: true, comments: true } },
       },
     });
   }
@@ -81,9 +90,7 @@ export class BlogsService {
         isPublished: true,
         createdAt: true,
         updatedAt: true,
-        _count: {
-          select: { likes: true, comments: true },
-        },
+        _count: { select: { likes: true, comments: true } },
       },
     });
 
@@ -100,7 +107,6 @@ export class BlogsService {
     if (blog.userId !== userId)
       throw new ForbiddenException('You can only edit your own blogs');
 
-    // Handle slug regeneration if title changed
     let slug = blog.slug;
     if (dto.title && dto.title !== blog.title) {
       const newBase = generateSlug(dto.title);
@@ -112,7 +118,7 @@ export class BlogsService {
         : newBase;
     }
 
-    return this.prisma.blog.update({
+    const updated = await this.prisma.blog.update({
       where: { id },
       data: {
         ...(dto.title && { title: dto.title, slug }),
@@ -130,6 +136,21 @@ export class BlogsService {
         updatedAt: true,
       },
     });
+
+    // Enqueue summary job when blog is being published for first time
+    const isBeingPublished = dto.isPublished === true && !blog.isPublished;
+    const contentChanged =
+      dto.content !== undefined && dto.content !== blog.content;
+    const needsSummary = !updated.summary || contentChanged;
+
+    if (
+      (isBeingPublished || (updated.isPublished && contentChanged)) &&
+      needsSummary
+    ) {
+      await this.enqueueSummaryJob(updated.id, updated.title, updated.content);
+    }
+
+    return updated;
   }
 
   async remove(id: string, userId: string) {
@@ -189,9 +210,7 @@ export class BlogsService {
         id: true,
         content: true,
         createdAt: true,
-        user: {
-          select: { id: true, username: true },
-        },
+        user: { select: { id: true, username: true } },
       },
     });
   }
@@ -207,10 +226,22 @@ export class BlogsService {
         id: true,
         content: true,
         createdAt: true,
-        user: {
-          select: { id: true, username: true },
-        },
+        user: { select: { id: true, username: true } },
       },
+    });
+  }
+
+  // --- Private Helpers ---
+
+  private async enqueueSummaryJob(
+    blogId: string,
+    title: string,
+    content: string,
+  ): Promise<void> {
+    const jobData: GenerateSummaryJobData = { blogId, title, content };
+    await this.blogQueue.add(BLOG_JOBS.GENERATE_SUMMARY, jobData, {
+      jobId: `summary-${blogId}`, // deduplicate: same blog won't queue twice
+      delay: 1000, // slight delay to let the DB write settle
     });
   }
 }

@@ -5,7 +5,10 @@ import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+    rawBody: false,
+  });
 
   app.useLogger(app.get(Logger));
 
@@ -18,7 +21,6 @@ async function bootstrap() {
     }),
   );
 
-  // Global exception filter — consistent error shape everywhere
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   app.enableCors({
@@ -26,8 +28,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.setGlobalPrefix('api');
+  // Use versioned prefix — avoids wildcard catch-all route conflict
+  app.setGlobalPrefix('api', {
+    exclude: [],
+  });
 
   await app.listen(process.env.PORT ?? 3001);
 }
-bootstrap();
+void bootstrap();

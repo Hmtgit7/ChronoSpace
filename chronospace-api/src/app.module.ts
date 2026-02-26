@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { BullModule } from '@nestjs/bullmq';
 import { LoggerModule } from 'nestjs-pino';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { BlogsModule } from './blogs/blogs.module';
 import { PublicModule } from './public/public.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -29,17 +31,25 @@ import { PublicModule } from './public/public.module';
       { name: 'medium', ttl: 60000, limit: 100 },
     ]),
 
+    // BullMQ Redis connection — reads from env via ConfigService
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get<string>('REDIS_HOST') ?? 'localhost',
+          port: configService.get<number>('REDIS_PORT') ?? 6379,
+          password: configService.get<string>('REDIS_PASSWORD') || undefined,
+        },
+      }),
+      inject: [ConfigService],
+    }),
+
     PrismaModule,
     AuthModule,
     BlogsModule,
     PublicModule,
+    JobsModule,
   ],
-  providers: [
-    // Registers ThrottlerGuard globally — returns 429 on violation automatically
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
