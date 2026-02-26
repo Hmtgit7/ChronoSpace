@@ -4,13 +4,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-// import { BlogsModule } from './blogs/blogs.module';
-// import { PublicModule } from './public/public.module';
+import { BlogsModule } from './blogs/blogs.module';
+import { PublicModule } from './public/public.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-
     LoggerModule.forRoot({
       pinoHttp: {
         transport:
@@ -22,24 +21,14 @@ import { AuthModule } from './auth/auth.module';
         redact: ['req.headers.authorization'],
       },
     }),
-
     ThrottlerModule.forRoot([
-      {
-        name: 'short',
-        ttl: 1000,
-        limit: 10,
-      },
-      {
-        name: 'medium',
-        ttl: 60000,
-        limit: 100,
-      },
+      { name: 'short', ttl: 1000, limit: 10 },
+      { name: 'medium', ttl: 60000, limit: 100 },
     ]),
-
     PrismaModule,
     AuthModule,
-    // BlogsModule,
-    // PublicModule,
+    BlogsModule,
+    PublicModule,
   ],
 })
 export class AppModule {}
