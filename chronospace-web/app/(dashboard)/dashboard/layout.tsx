@@ -54,7 +54,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Main content */}
             <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
                 {/* Top bar */}
-                <header className="sticky top-0 z-30 h-14 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 sm:px-6">
+                <header className="sticky top-0 z-30 h-14 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 py-10 sm:px-6">
                     <button
                         onClick={() => setSidebarOpen(true)}
                         className="lg:hidden w-9 h-9 rounded-xl bg-secondary border border-border flex items-center justify-center"

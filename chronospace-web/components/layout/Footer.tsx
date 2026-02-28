@@ -4,7 +4,7 @@ import { Feather, Github } from 'lucide-react';
 export function Footer() {
     return (
         <footer className="border-t border-border mt-auto">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
