@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/types";
 
 interface AuthState {
@@ -32,7 +32,6 @@ export const useAuthStore = create<AuthState>()(
       _hasHydrated: false,
 
       setAuth: (user, token) => {
-        // Write to both localStorage (via persist) AND cookie (for middleware)
         setCookie("chronospace_token", token);
         if (typeof window !== "undefined") {
           localStorage.setItem("chronospace_token", token);
@@ -52,13 +51,57 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "chronospace_auth",
+      version: 1, // bump this if store shape changes
+      storage: createJSONStorage(() => {
+        // Safe storage wrapper — never throws
+        if (typeof window === "undefined") {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          };
+        }
+        return {
+          getItem: (key) => {
+            try {
+              return localStorage.getItem(key);
+            } catch {
+              return null;
+            }
+          },
+          setItem: (key, value) => {
+            try {
+              localStorage.setItem(key, value);
+            } catch {
+              // storage quota exceeded — ignore
+            }
+          },
+          removeItem: (key) => {
+            try {
+              localStorage.removeItem(key);
+            } catch {
+              // ignore
+            }
+          },
+        };
+      }),
       partialize: (state) => ({
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-      onRehydrateStorage: () => (state) => {
-        // Re-sync cookie after page reload (persist restores localStorage but not cookie)
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.warn("[Auth Store] Rehydration failed, resetting:", error);
+          // Clear corrupt data and start fresh
+          try {
+            localStorage.removeItem("chronospace_auth");
+            localStorage.removeItem("chronospace_token");
+          } catch {
+            // ignore
+          }
+          deleteCookie("chronospace_token");
+        }
         if (state?.token) {
           setCookie("chronospace_token", state.token);
         }
