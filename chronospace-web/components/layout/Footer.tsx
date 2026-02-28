@@ -20,7 +20,7 @@ export function Footer() {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <Link href="/feed" className="hover:text-foreground transition-colors">Feed</Link>
                         <a
-                            href="https://github.com"
+                            href="https://github.com/Hmtgit7/ChronoSpace"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1 hover:text-foreground transition-colors"

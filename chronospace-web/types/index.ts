@@ -32,6 +32,7 @@ export interface Blog {
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
+  publishedAt?: string;
   user?: Pick<User, "id" | "username">;
   _count?: {
     likes: number;

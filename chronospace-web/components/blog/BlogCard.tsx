@@ -27,7 +27,7 @@ export function BlogCard({ blog, index }: Props) {
                 <div className="w-7 h-7 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center flex-shrink-0">
                     <User className="w-3.5 h-3.5 text-primary" />
                 </div>
-                <span className="text-sm font-medium text-foreground/80">@{blog.author.username}</span>
+                <span className="text-sm font-medium text-foreground/80">@{blog?.author?.username}</span>
                 <span className="text-muted-foreground/40">·</span>
                 <span className="text-xs text-muted-foreground">{timeAgo(blog.publishedAt)}</span>
             </div>

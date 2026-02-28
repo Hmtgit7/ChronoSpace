@@ -95,15 +95,15 @@ export default function BlogPage({ params }: { params: Promise<{ slug: string }>
                                         <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center">
                                             <User className="w-3 h-3 text-primary" />
                                         </div>
-                                        <span className="font-medium text-foreground">@{blog.user?.username}</span>
+                                        <span className="font-medium text-foreground">@{blog?.user?.username}</span>
                                     </span>
                                     <span className="flex items-center gap-1.5">
                                         <Calendar className="w-3.5 h-3.5" />
-                                        {formatDate(blog.createdAt)}
+                                        {formatDate(new Date(blog.publishedAt ?? blog.createdAt))}
                                     </span>
                                     <span className="flex items-center gap-1.5">
                                         <Clock className="w-3.5 h-3.5" />
-                                        {readingTime(blog.content)}
+                                        {blog.content ? readingTime(blog.content) : '1 min read'}
                                     </span>
                                     <span className="flex items-center gap-1.5">
                                         <MessageSquare className="w-3.5 h-3.5" />

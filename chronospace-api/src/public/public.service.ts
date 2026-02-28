@@ -42,7 +42,7 @@ export class PublicService {
         slug: blog.slug,
         summary: blog.summary,
         publishedAt: blog.createdAt,
-        author: blog.user,
+        user: blog.user,
         likeCount: blog._count.likes,
         commentCount: blog._count.comments,
       })),
@@ -90,7 +90,7 @@ export class PublicService {
       summary: blog.summary,
       publishedAt: blog.createdAt,
       updatedAt: blog.updatedAt,
-      author: blog.user,
+      user: blog.user,
       likeCount: blog._count.likes,
       commentCount: blog._count.comments,
     };
