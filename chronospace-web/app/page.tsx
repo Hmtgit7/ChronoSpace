@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import { ArrowRight, Feather, Shield, Zap, Globe, BookOpen, Heart } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { LandingHero } from '@/components/landing/LandingHero';

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Heart, MessageSquare, Clock, User } from 'lucide-react';
-import { timeAgo, readingTime, cn } from '@/lib/utils';
+import { timeAgo, readingTime } from '@/lib/utils';
 import type { FeedBlog } from '@/types';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
     currentPage: number;
 }
 
-export function BlogCard({ blog, index, currentPage }: Props) {
+export function BlogCard({ blog, index }: Props) {
     return (
         <motion.article
             initial={{ opacity: 0, y: 24 }}

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rss, Search, TrendingUp } from 'lucide-react';
+import { Rss, TrendingUp } from 'lucide-react';
 import { useFeed } from '@/lib/hooks/useFeed';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { BlogCardSkeleton } from '@/components/blog/BlogSkeleton';

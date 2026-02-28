@@ -1,6 +1,6 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, User } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { useComments } from '@/lib/hooks/useComments';
 import { timeAgo } from '@/lib/utils';
 import { CommentForm } from './CommentForm';

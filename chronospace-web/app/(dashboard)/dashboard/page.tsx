@@ -6,7 +6,6 @@ import { useMyBlogs } from '@/lib/hooks/useBlogs';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { BlogRowSkeleton } from '@/components/blog/BlogSkeleton';
 import { BlogRow } from '@/components/blog/BlogRow';
-import { timeAgo } from '@/lib/utils';
 
 const fadeUp = (i = 0) => ({
     initial: { opacity: 0, y: 20 },
@@ -39,7 +38,7 @@ export default function DashboardPage() {
                 <h1 className="text-2xl sm:text-3xl font-bold mb-1">
                     Good {getGreeting()}, <span className="text-primary">@{user?.username}</span> 👋
                 </h1>
-                <p className="text-muted-foreground">Here's what's happening with your blogs today.</p>
+                <p className="text-muted-foreground">Here&apos;s what&apos;s happening with your blogs today.</p>
             </motion.div>
 
             {/* Stats grid */}

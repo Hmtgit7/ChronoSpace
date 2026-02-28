@@ -6,7 +6,6 @@ import { useLike } from '@/lib/hooks/useLike';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { blogsApi } from '@/lib/api/blogs';
 
 interface Props {
     blogId: string;
@@ -23,8 +22,9 @@ export function LikeButton({ blogId, initialLikeCount, currentPage = 1, size = '
     const [count, setCount] = useState(initialLikeCount);
     const [burst, setBurst] = useState(false);
 
-    // Keep count in sync with prop (for feed page optimistic updates)
-    useEffect(() => setCount(initialLikeCount), [initialLikeCount]);
+    useEffect(() => {
+        setCount(initialLikeCount);
+    }, [initialLikeCount]);
 
     const handleToggle = async () => {
         if (!isAuthenticated) {
@@ -66,7 +66,6 @@ export function LikeButton({ blogId, initialLikeCount, currentPage = 1, size = '
             )}
             aria-label={liked ? 'Unlike' : 'Like'}
         >
-            {/* Burst particles */}
             <AnimatePresence>
                 {burst && (
                     <>

@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Feather, LayoutDashboard, Rss, LogOut, User } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
@@ -16,6 +16,7 @@ export function Navbar() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const pathname = usePathname();
+    const prevPathnameRef = useRef(pathname);
     const router = useRouter();
     const { user, isAuthenticated, clearAuth } = useAuthStore();
 
@@ -25,7 +26,15 @@ export function Navbar() {
         return () => window.removeEventListener('scroll', handler);
     }, []);
 
-    useEffect(() => setOpen(false), [pathname]);
+    // Close mobile menu on navigation using a ref to detect change,
+    // calling setOpen inside a setTimeout to move it out of the effect body
+    useEffect(() => {
+        if (prevPathnameRef.current !== pathname) {
+            prevPathnameRef.current = pathname;
+            const id = setTimeout(() => setOpen(false), 0);
+            return () => clearTimeout(id);
+        }
+    }, [pathname]);
 
     const handleLogout = () => {
         clearAuth();

@@ -195,7 +195,7 @@ export default function BlogPage({ params }: { params: Promise<{ slug: string }>
 }
 
 /* ─── Sub-components ─────────────────────────────── */
-
+const SKELETON_WIDTHS = [95, 88, 72, 100, 83, 91, 76, 85];
 function BlogPageSkeleton() {
     return (
         <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 animate-pulse space-y-6">
@@ -213,8 +213,8 @@ function BlogPageSkeleton() {
             </div>
             <div className="h-px bg-border mt-6" />
             <div className="space-y-3 mt-6">
-                {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="h-4 bg-muted rounded" style={{ width: `${70 + Math.random() * 30}%` }} />
+                {SKELETON_WIDTHS.map((w, i) => (
+                    <div key={i} className="h-4 bg-muted rounded" style={{ width: `${w}%` }} />
                 ))}
             </div>
         </div>
