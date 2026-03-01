@@ -2,85 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedQueryDto } from './dto/feed-query.dto';
 import { UserBlogsQueryDto } from './dto/user-blogs-query.dto';
-
-/** Tag shape returned by public API (matches Prisma Tag select). */
-export interface TagPayload {
-  id: string;
-  name: string;
-  label: string;
-  color: string;
-}
-
-/** Feed blog row shape (matches Prisma findMany select). */
-interface FeedBlogRow {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string | null;
-  createdAt: Date;
-  user: { id: string; username: string };
-  _count: { likes: number; comments: number };
-  tags: Array<{ tag: TagPayload }>;
-}
-
-/** Blog-by-slug row shape (matches Prisma findUnique select). */
-interface BlogBySlugRow extends FeedBlogRow {
-  content: string;
-  updatedAt: Date;
-  isPublished: boolean;
-}
-
-/** Tag shape returned by public API (matches Prisma Tag select). */
-export interface TagPayload {
-  id: string;
-  name: string;
-  label: string;
-  color: string;
-}
-
-/** Feed blog row shape (matches Prisma findMany select). */
-interface FeedBlogRow {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string | null;
-  createdAt: Date;
-  user: { id: string; username: string };
-  _count: { likes: number; comments: number };
-  tags: Array<{ tag: TagPayload }>;
-}
-
-/** Blog-by-slug row shape (matches Prisma findUnique select). */
-interface BlogBySlugRow extends FeedBlogRow {
-  content: string;
-  updatedAt: Date;
-  isPublished: boolean;
-}
-
-interface AuthorProfile {
-  id: string;
-  username: string;
-  displayName: string | null;
-  bio: string | null;
-  joinedAt: Date;
-  stats: {
-    publishedBlogs: number;
-    totalLikes: number;
-    totalComments: number;
-  };
-}
-
-interface AuthorProfileUserRow {
-  id: string;
-  username: string;
-  displayName: string | null;
-  bio: string | null;
-  createdAt: Date;
-  _count: {
-    blogs: number;
-    likes: number;
-  };
-}
+import {
+  AuthorProfile,
+  AuthorProfileUserRow,
+  BlogBySlugRow,
+  FeedBlogRow,
+  TagPayload,
+} from 'types';
 
 @Injectable()
 export class PublicService {

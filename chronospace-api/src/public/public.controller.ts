@@ -3,6 +3,7 @@ import { Throttle } from '@nestjs/throttler';
 import { PublicService } from './public.service';
 import { FeedQueryDto } from './dto/feed-query.dto';
 import { UserBlogsQueryDto } from './dto/user-blogs-query.dto';
+import { AuthorProfile } from 'types';
 
 @Controller('public')
 export class PublicController {
@@ -28,7 +29,9 @@ export class PublicController {
 
   @Get('users/:username')
   @Throttle({ medium: { ttl: 60000, limit: 60 } })
-  getAuthorProfile(@Param('username') username: string) {
+  getAuthorProfile(
+    @Param('username') username: string,
+  ): Promise<AuthorProfile> {
     return this.publicService.getAuthorProfile(username);
   }
 
