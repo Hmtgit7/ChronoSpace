@@ -1,5 +1,5 @@
 "use client";
-import { use } from "react";
+import { use, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -14,6 +14,7 @@ import { BlogPageSkeleton } from "@/components/blog/BlogPageSkeleton";
 import { BlogNotFound } from "@/components/blog/BlogNotFound";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { ReadingProgress } from "@/components/blog/ReadingProgress";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -23,6 +24,7 @@ export default function BlogPage({ params }: PageProps) {
     const { slug } = use(params);
     const { data: blog, isLoading, isError } = usePublicBlog(slug);
     const { data: comments } = useComments(blog?.id ?? "");
+    const articleRef = useRef<HTMLElement>(null);
 
     const handleShare = () => {
         if (navigator.share && blog) {
@@ -34,6 +36,7 @@ export default function BlogPage({ params }: PageProps) {
 
     return (
         <div className="flex flex-col min-h-screen">
+            <ReadingProgress targetRef={articleRef} />
             <Navbar />
             <main className="flex-1 pt-20">
 
@@ -144,7 +147,7 @@ export default function BlogPage({ params }: PageProps) {
                                     transition={{ delay: 0.18 }}
                                     className="flex-1 min-w-0 max-w-3xl"
                                 >
-                                    <article className="blog-content">
+                                    <article ref={articleRef} className="blog-content">
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                             {blog.content}
                                         </ReactMarkdown>
