@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Menu, X, Feather } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,9 +13,9 @@ import { NAV_LINKS } from "./NavLinks";
 
 export function Navbar() {
     const [open, setOpen] = useState(false);
+    const [openedOnPath, setOpenedOnPath] = useState<string | null>(null);
     const [scrolled, setScrolled] = useState(false);
     const pathname = usePathname();
-    const prevPathnameRef = useRef(pathname);
     const router = useRouter();
     const { user, isAuthenticated, clearAuth } = useAuthStore();
 
@@ -26,13 +26,7 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", handler);
     }, []);
 
-    // Close mobile menu on route change
-    useEffect(() => {
-        if (prevPathnameRef.current !== pathname) {
-            prevPathnameRef.current = pathname;
-            setOpen(false);
-        }
-    }, [pathname]);
+    const isMenuOpen = open && openedOnPath === pathname;
 
     const handleLogout = () => {
         clearAuth();
@@ -107,18 +101,26 @@ export function Navbar() {
                 <div className="flex items-center gap-2 md:hidden">
                     <ThemeToggle />
                     <button
-                        onClick={() => setOpen((v) => !v)}
+                        onClick={() => {
+                            if (isMenuOpen) {
+                                setOpen(false);
+                                return;
+                            }
+
+                            setOpenedOnPath(pathname);
+                            setOpen(true);
+                        }}
                         className="w-9 h-9 rounded-xl bg-secondary border border-border flex items-center justify-center"
-                        aria-label={open ? "Close menu" : "Open menu"}
+                        aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                     >
-                        {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                        {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
                     </button>
                 </div>
             </nav>
 
             {/* Mobile menu */}
             <AnimatePresence>
-                {open && (
+                {isMenuOpen && (
                     <NavMobileMenu
                         links={NAV_LINKS}
                         isAuthenticated={isAuthenticated}

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart, MessageSquare, Clock, User } from "lucide-react";
+import { Heart, MessageSquare, Clock } from "lucide-react";
 import { timeAgo, readingTime } from "@/lib/utils";
 import type { FeedBlog } from "@/types";
 
