@@ -14,7 +14,9 @@
 | Service  | URL |
 |----------|-----|
 | Frontend | `https://chrono-space-zeta.vercel.app` |
-| API      | `` |
+| API      | `https://chronospace-ymqn.onrender.com` |
+| Health   | `https://chronospace-ymqn.onrender.com/api/health` |
+| GitHub   | `https://github.com/hmtgit7/chronospace` |
 
 ---
 

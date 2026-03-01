@@ -13,9 +13,9 @@
 
 | Service  | URL                                               |
 | -------- | ------------------------------------------------- |
-| API      | `https://chronospace-api.onrender.com`            |
-| Frontend | `https://chronospace.vercel.app`                  |
-| Health   | `https://chronospace-api.onrender.com/api/health` |
+| API      | `https://chronospace-ymqn.onrender.com`           |
+| Frontend | `https://chrono-space-zeta.vercel.app`            |
+| Health   | `https://chronospace-ymqn.onrender.com/api/health` |
 
 ---
 
@@ -47,7 +47,7 @@
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/your-username/chronospace
+git clone https://github.com/hmtgit7/chronospace
 cd chronospace/chronospace-api
 pnpm install
 

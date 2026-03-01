@@ -3,7 +3,7 @@
 > A production-ready, full-stack blog platform — write privately, publish publicly, engage socially.
 
 [![Live](https://img.shields.io/badge/Live-chrono--space--zeta.vercel.app-success)](https://chrono-space-zeta.vercel.app)
-[![API](https://img.shields.io/badge/API-chronospace--api.onrender.com-blue)](https://chronospace-api.onrender.com/api/health)
+[![API](https://img.shields.io/badge/API-chronospace--ymqn.onrender.com-blue)](https://chronospace-ymqn.onrender.com/api/health)
 [![GitHub](https://img.shields.io/badge/GitHub-hmtgit7%2Fchronospace-181717?logo=github)](https://github.com/hmtgit7/chronospace)
 
 ---
@@ -13,8 +13,8 @@
 | Service  | URL                                             |
 | -------- | ----------------------------------------------- |
 | Frontend | https://chrono-space-zeta.vercel.app            |
-| API      | https://chronospace-api.onrender.com            |
-| Health   | https://chronospace-api.onrender.com/api/health |
+| API      | https://chronospace-ymqn.onrender.com           |
+| Health   | https://chronospace-ymqn.onrender.com/api/health |
 | GitHub   | https://github.com/hmtgit7/chronospace          |
 
 ---
@@ -195,7 +195,7 @@ NestJS API (Render)
 
 1. Import GitHub repo into Vercel
 2. Set **Root Directory** to `chronospace-web`
-3. Add environment variable: `NEXT_PUBLIC_API_URL=https://chronospace-api.onrender.com/api`
+3. Add environment variable: `NEXT_PUBLIC_API_URL=https://chronospace-ymqn.onrender.com/api`
 4. Deploy — Vercel auto-detects Next.js
 
 ### Database → Neon / Supabase / Railway
