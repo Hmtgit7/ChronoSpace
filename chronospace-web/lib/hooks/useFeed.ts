@@ -1,18 +1,21 @@
+// lib/hooks/useFeed.ts
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { publicApi } from "@/lib/api/public";
 
 export const FEED_KEYS = {
-  feed: (page: number) => ["feed", page] as const,
+  infinite: ["feed", "infinite"] as const,
   blog: (slug: string) => ["public-blog", slug] as const,
 };
 
-export function useFeed(page = 1) {
-  return useQuery({
-    queryKey: FEED_KEYS.feed(page),
-    queryFn: () => publicApi.getFeed(page, 9),
+export function useFeedInfinite() {
+  return useInfiniteQuery({
+    queryKey: FEED_KEYS.infinite,
+    queryFn: ({ pageParam = 1 }) => publicApi.getFeed(pageParam as number, 9),
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
+    initialPageParam: 1,
     staleTime: 30_000,
-    placeholderData: (prev) => prev, // keep previous page while loading next
   });
 }
 
