@@ -4,21 +4,29 @@ import {
   IsOptional,
   MinLength,
   MaxLength,
+  IsArray,
+  ArrayMaxSize,
 } from 'class-validator';
 
 export class UpdateBlogDto {
   @IsString()
   @IsOptional()
-  @MinLength(3, { message: 'Title must be at least 3 characters' })
-  @MaxLength(200, { message: 'Title must not exceed 200 characters' })
+  @MinLength(3)
+  @MaxLength(200)
   title?: string;
 
   @IsString()
   @IsOptional()
-  @MinLength(10, { message: 'Content must be at least 10 characters' })
+  @MinLength(10)
   content?: string;
 
   @IsBoolean()
   @IsOptional()
   isPublished?: boolean;
+
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMaxSize(5)
+  @IsOptional()
+  tagIds?: string[];
 }

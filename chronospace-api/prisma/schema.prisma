@@ -41,6 +41,7 @@ model Blog {
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   likes    Like[]
   comments Comment[]
+  tags     BlogTag[] 
 
   @@index([userId])
   @@index([isPublished])
@@ -72,4 +73,24 @@ model Comment {
 
   @@index([blogId])
   @@index([createdAt])
+}
+
+model Tag {
+  id        String     @id @default(cuid())
+  name      String     @unique  // e.g. "technology"
+  label     String               // e.g. "Technology"
+  color     String     @default("#6366f1") // display color hex
+  createdAt DateTime   @default(now())
+  blogs     BlogTag[]
+}
+
+model BlogTag {
+  blogId String
+  tagId  String
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([blogId, tagId])
+  @@index([blogId])
+  @@index([tagId])
 }
