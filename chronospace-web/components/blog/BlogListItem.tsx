@@ -28,7 +28,15 @@ export function BlogListItem({ blog, index }: Props) {
             {/* Content */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground/70">{authorName}</span>
+                    {/* <span className="font-medium text-foreground/70">{authorName}</span> */}
+                    <Link
+                        href={`/u/${blog.author?.username}`}
+                        onClick={(e) => e.stopPropagation()} // prevent card click
+                        className="font-medium text-foreground hover:text-primary transition-colors"
+                    >
+                        {/* {blog.author?.username} */}
+                        {authorName}
+                    </Link>
                     <span>·</span>
                     <span>{timeAgo(blog.publishedAt)}</span>
                 </div>

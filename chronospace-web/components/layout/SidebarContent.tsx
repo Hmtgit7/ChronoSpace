@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
     LayoutDashboard, PenSquare, FileText, Rss,
     LogOut, Feather, ChevronRight,
+    User,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -15,6 +16,7 @@ const NAV = [
     { label: 'My Blogs', href: '/dashboard/blogs', icon: FileText },
     { label: 'New Blog', href: '/dashboard/new', icon: PenSquare },
     { label: 'Public Feed', href: '/feed', icon: Rss },
+    { label: "Profile", href: "/dashboard/profile", icon: User },
 ];
 export default function SidebarContent() {
     const { user, clearAuth } = useAuthStore();

@@ -1,60 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedQueryDto } from './dto/feed-query.dto';
-
-/** Tag shape returned by public API (matches Prisma Tag select). */
-export interface TagPayload {
-  id: string;
-  name: string;
-  label: string;
-  color: string;
-}
-
-/** Feed blog row shape (matches Prisma findMany select). */
-interface FeedBlogRow {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string | null;
-  createdAt: Date;
-  user: { id: string; username: string };
-  _count: { likes: number; comments: number };
-  tags: Array<{ tag: TagPayload }>;
-}
-
-/** Blog-by-slug row shape (matches Prisma findUnique select). */
-interface BlogBySlugRow extends FeedBlogRow {
-  content: string;
-  updatedAt: Date;
-  isPublished: boolean;
-}
-
-/** Tag shape returned by public API (matches Prisma Tag select). */
-export interface TagPayload {
-  id: string;
-  name: string;
-  label: string;
-  color: string;
-}
-
-/** Feed blog row shape (matches Prisma findMany select). */
-interface FeedBlogRow {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string | null;
-  createdAt: Date;
-  user: { id: string; username: string };
-  _count: { likes: number; comments: number };
-  tags: Array<{ tag: TagPayload }>;
-}
-
-/** Blog-by-slug row shape (matches Prisma findUnique select). */
-interface BlogBySlugRow extends FeedBlogRow {
-  content: string;
-  updatedAt: Date;
-  isPublished: boolean;
-}
+import { UserBlogsQueryDto } from './dto/user-blogs-query.dto';
+import {
+  AuthorProfile,
+  AuthorProfileUserRow,
+  BlogBySlugRow,
+  FeedBlogRow,
+  TagPayload,
+} from 'types';
 
 @Injectable()
 export class PublicService {
@@ -190,5 +144,113 @@ export class PublicService {
     })) as TagPayload[];
 
     return tags;
+  }
+  async getAuthorProfile(username: string): Promise<AuthorProfile> {
+    const rawUser = await this.prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        bio: true,
+        createdAt: true,
+        _count: {
+          select: {
+            blogs: { where: { isPublished: true } },
+            likes: true,
+          },
+        },
+      },
+    });
+
+    const user = rawUser as AuthorProfileUserRow | null;
+
+    if (!user) throw new NotFoundException('Author not found');
+
+    // Total likes received on all their published blogs
+    const totalLikesReceived = await this.prisma.like.count({
+      where: { blog: { userId: user.id, isPublished: true } },
+    });
+
+    // Total comments received
+    const totalCommentsReceived = await this.prisma.comment.count({
+      where: { blog: { userId: user.id, isPublished: true } },
+    });
+
+    return {
+      id: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      bio: user.bio,
+      joinedAt: user.createdAt,
+      stats: {
+        publishedBlogs: user._count.blogs,
+        totalLikes: totalLikesReceived,
+        totalComments: totalCommentsReceived,
+      },
+    };
+  }
+
+  async getAuthorBlogs(username: string, query: UserBlogsQueryDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 9;
+    const skip = (page - 1) * limit;
+
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: { id: true },
+    });
+
+    if (!user) throw new NotFoundException('Author not found');
+
+    const where = { userId: user.id, isPublished: true };
+
+    const [blogs, total] = await this.prisma.$transaction([
+      this.prisma.blog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          summary: true,
+          createdAt: true,
+          user: { select: { id: true, username: true } },
+          _count: { select: { likes: true, comments: true } },
+          tags: {
+            select: {
+              tag: {
+                select: { id: true, name: true, label: true, color: true },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.blog.count({ where }),
+    ]);
+
+    return {
+      data: blogs.map((blog) => ({
+        id: blog.id,
+        title: blog.title,
+        slug: blog.slug,
+        summary: blog.summary,
+        publishedAt: blog.createdAt,
+        author: blog.user,
+        likeCount: blog._count.likes,
+        commentCount: blog._count.comments,
+        tags: blog.tags.map((bt) => bt.tag),
+      })),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 }

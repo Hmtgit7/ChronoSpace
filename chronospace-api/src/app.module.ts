@@ -11,6 +11,7 @@ import { PublicModule } from './public/public.module';
 import { JobsModule } from './jobs/jobs.module';
 import { HealthModule } from './health/health.module';
 import { TagsModule } from './tags/tags.module';
+import { ProfileModule } from './profile/profile.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -54,6 +55,7 @@ import { TagsModule } from './tags/tags.module';
     JobsModule,
     HealthModule,
     TagsModule,
+    ProfileModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
