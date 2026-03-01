@@ -1,24 +1,27 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { useCreateBlog, getApiError } from '@/lib/hooks/useBlogs';
-import { BlogEditor, BlogFormData } from '@/components/blog/BlogEditor';
+"use client";
+import { useCreateBlog } from "@/lib/hooks/useBlogs";
+import { BlogEditor } from "@/components/blog/BlogEditor";
+import type { BlogFormData } from "@/components/blog/BlogEditor";
 
 export default function NewBlogPage() {
-    const router = useRouter();
-    const create = useCreateBlog();
+    const createBlog = useCreateBlog();
 
     const handleSubmit = async (data: BlogFormData) => {
-        const blog = await create.mutateAsync(data);
-        // Navigate to edit page after create so user can keep editing
-        router.push(`/dashboard/edit/${blog.id}`);
+        await createBlog.mutateAsync({
+            title: data.title,
+            content: data.content,
+            isPublished: data.isPublished,
+        });
     };
 
     return (
-        <BlogEditor
-            mode="create"
-            onSubmit={handleSubmit}
-            isLoading={create.isPending}
-            error={create.error ? getApiError(create.error) : null}
-        />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+            <BlogEditor
+                mode="create"
+                onSubmit={handleSubmit}
+                isLoading={createBlog.isPending}
+                error={createBlog.error ? "Failed to save. Please try again." : null}
+            />
+        </div>
     );
 }
