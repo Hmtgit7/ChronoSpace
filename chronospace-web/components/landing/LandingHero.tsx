@@ -1,121 +1,88 @@
 'use client';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Feather, Sparkles } from 'lucide-react';
-
-const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: (i = 0) => ({
-        opacity: 1,
-        y: 0,
-        transition: { delay: i * 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const },
-    }),
-};
+import { ArrowRight, Feather, Rss } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export function LandingHero() {
     return (
-        <section className="relative min-h-[92vh] flex items-center overflow-hidden pt-16">
-            {/* Background blobs */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/15 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet-400/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
-            </div>
-
-            {/* Grid pattern */}
+        <section className="relative pt-28 pb-20 px-4 sm:px-6 overflow-hidden">
+            {/* Subtle dot grid background */}
             <div
-                className="absolute inset-0 -z-10 opacity-[0.03] dark:opacity-[0.06]"
+                className="absolute inset-0 -z-10 opacity-30 dark:opacity-15"
                 style={{
                     backgroundImage:
-                        'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
-                    backgroundSize: '40px 40px',
+                        'radial-gradient(circle, oklch(0.52 0.2 255 / 25%) 1px, transparent 1px)',
+                    backgroundSize: '32px 32px',
                 }}
             />
+            {/* Soft radial glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/8 rounded-full blur-3xl -z-10" />
 
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full py-20">
-                <div className="max-w-4xl mx-auto text-center">
-                    {/* Badge */}
-                    <motion.div
-                        variants={fadeUp}
-                        initial="hidden"
-                        animate="visible"
-                        custom={0}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium mb-8"
-                    >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        Secure · Private · Beautiful
-                    </motion.div>
+            <div className="max-w-4xl mx-auto text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="mb-6"
+                >
+                    <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-xs font-medium">
+                        <Feather className="w-3 h-3 text-primary" />
+                        The modern writing platform
+                    </Badge>
+                </motion.div>
 
-                    {/* Headline */}
-                    <motion.h1
-                        variants={fadeUp}
-                        initial="hidden"
-                        animate="visible"
-                        custom={1}
-                        className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6"
-                    >
-                        Your stories,{' '}
-                        <span className="gradient-text">your space.</span>
-                    </motion.h1>
+                <motion.h1
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: 0.08 }}
+                    className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-5 leading-[1.12]"
+                >
+                    Write. Publish.
+                    <br />
+                    <span className="text-primary">Be discovered.</span>
+                </motion.h1>
 
-                    {/* Sub */}
-                    <motion.p
-                        variants={fadeUp}
-                        initial="hidden"
-                        animate="visible"
-                        custom={2}
-                        className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
-                    >
-                        ChronoSpace is a modern blog platform where you control whats public
-                        and what stays private. Write, publish, and connect with readers who
-                        care about your craft.
-                    </motion.p>
+                <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.15 }}
+                    className="text-lg text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed"
+                >
+                    ChronoSpace is a focused blog platform for writers who want to craft,
+                    publish, and grow — without the noise.
+                </motion.p>
 
-                    {/* CTAs */}
-                    <motion.div
-                        variants={fadeUp}
-                        initial="hidden"
-                        animate="visible"
-                        custom={3}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                    >
-                        <Link
-                            href="/register"
-                            className="group flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:bg-primary/90 transition-all duration-200 text-base"
-                        >
-                            <Feather className="w-4 h-4" />
-                            Start Writing Free
-                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.22 }}
+                    className="flex flex-col sm:flex-row items-center justify-center gap-3"
+                >
+                    <Button asChild size="lg" className="w-full sm:w-auto">
+                        <Link href="/register">
+                            Start writing free
+                            <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
-                        <Link
-                            href="/feed"
-                            className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-border hover:bg-secondary transition-colors font-semibold text-base"
-                        >
-                            Explore Feed
+                    </Button>
+                    <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                        <Link href="/feed">
+                            <Rss className="w-4 h-4 mr-2" />
+                            Browse stories
                         </Link>
-                    </motion.div>
+                    </Button>
+                </motion.div>
 
-                    {/* Stats */}
-                    <motion.div
-                        variants={fadeUp}
-                        initial="hidden"
-                        animate="visible"
-                        custom={4}
-                        className="mt-16 flex flex-wrap justify-center gap-8 text-sm text-muted-foreground"
-                    >
-                        {[
-                            { label: 'Public & Private Blogs', value: '✦' },
-                            { label: 'JWT Secured', value: '✦' },
-                            { label: 'Real-time Feed', value: '✦' },
-                            { label: 'Like & Comment', value: '✦' },
-                        ].map((s) => (
-                            <div key={s.label} className="flex items-center gap-2">
-                                <span className="text-primary text-xs">{s.value}</span>
-                                <span>{s.label}</span>
-                            </div>
-                        ))}
-                    </motion.div>
-                </div>
+                {/* Social proof strip */}
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="mt-8 text-xs text-muted-foreground/60"
+                >
+                    Free forever · No ads · Markdown supported · AI summaries
+                </motion.p>
             </div>
         </section>
     );

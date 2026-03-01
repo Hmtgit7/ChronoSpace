@@ -1,112 +1,76 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import { useLike } from '@/lib/hooks/useLike';
 import { useAuthStore } from '@/lib/store/auth.store';
-import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-interface Props {
+interface LikeButtonProps {
     blogId: string;
     initialLikeCount: number;
-    currentPage?: number;
     size?: 'sm' | 'md';
 }
 
-export function LikeButton({ blogId, initialLikeCount, currentPage = 1, size = 'md' }: Props) {
+export function LikeButton({ blogId, initialLikeCount, size = 'md' }: LikeButtonProps) {
     const { isAuthenticated } = useAuthStore();
-    const router = useRouter();
-    const { like, unlike } = useLike(blogId, currentPage);
     const [liked, setLiked] = useState(false);
     const [count, setCount] = useState(initialLikeCount);
-    const [burst, setBurst] = useState(false);
+    const { like, unlike } = useLike(blogId, 1);
 
-    useEffect(() => {
-        setCount(initialLikeCount);
-    }, [initialLikeCount]);
-
-    const handleToggle = async () => {
-        if (!isAuthenticated) {
-            router.push('/login');
-            return;
-        }
-
+    const handleToggle = () => {
+        if (!isAuthenticated) return;
         if (liked) {
             setLiked(false);
             setCount((c) => c - 1);
-            await unlike.mutateAsync().catch(() => {
-                setLiked(true);
-                setCount((c) => c + 1);
+            unlike.mutate(undefined, {
+                onError: () => { setLiked(true); setCount((c) => c + 1); },
             });
         } else {
             setLiked(true);
             setCount((c) => c + 1);
-            setBurst(true);
-            setTimeout(() => setBurst(false), 600);
-            await like.mutateAsync().catch(() => {
-                setLiked(false);
-                setCount((c) => c - 1);
+            like.mutate(undefined, {
+                onError: () => { setLiked(false); setCount((c) => c - 1); },
             });
         }
     };
 
-    const isSm = size === 'sm';
+    const isSmall = size === 'sm';
 
     return (
         <button
             onClick={handleToggle}
-            disabled={like.isPending || unlike.isPending}
+            disabled={!isAuthenticated}
+            title={isAuthenticated ? (liked ? 'Unlike' : 'Like') : 'Sign in to like'}
             className={cn(
-                'relative flex items-center gap-2 rounded-xl font-medium transition-all duration-200 select-none',
-                isSm ? 'px-3 py-1.5 text-xs' : 'px-4 py-2.5 text-sm',
+                'flex flex-col items-center gap-1 rounded-xl border transition-all group',
+                isSmall ? 'w-10 h-auto py-2.5 px-2' : 'flex-row px-4 py-2.5 gap-2',
                 liked
-                    ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500/15'
-                    : 'bg-secondary border border-border text-muted-foreground hover:text-foreground hover:border-primary/20'
+                    ? 'bg-rose-500/10 border-rose-500/30 text-rose-500'
+                    : 'bg-secondary border-border text-muted-foreground hover:text-rose-500 hover:border-rose-500/30 hover:bg-rose-500/5',
+                !isAuthenticated && 'cursor-not-allowed opacity-50'
             )}
-            aria-label={liked ? 'Unlike' : 'Like'}
         >
-            <AnimatePresence>
-                {burst && (
-                    <>
-                        {[...Array(6)].map((_, i) => (
-                            <motion.span
-                                key={i}
-                                initial={{ opacity: 1, scale: 0, x: 0, y: 0 }}
-                                animate={{
-                                    opacity: 0,
-                                    scale: 1,
-                                    x: Math.cos((i / 6) * 2 * Math.PI) * 20,
-                                    y: Math.sin((i / 6) * 2 * Math.PI) * 20,
-                                }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.5, ease: 'easeOut' }}
-                                className="absolute w-1.5 h-1.5 bg-rose-400 rounded-full pointer-events-none"
-                            />
-                        ))}
-                    </>
-                )}
-            </AnimatePresence>
-
             <motion.div
                 animate={liked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
             >
                 <Heart
                     className={cn(
-                        isSm ? 'w-3.5 h-3.5' : 'w-4 h-4',
-                        liked ? 'fill-rose-500 text-rose-500' : ''
+                        'flex-shrink-0 transition-all',
+                        isSmall ? 'w-4 h-4' : 'w-4 h-4',
+                        liked && 'fill-rose-500'
                     )}
                 />
             </motion.div>
-
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
                 <motion.span
                     key={count}
-                    initial={{ opacity: 0, y: -8 }}
+                    initial={{ opacity: 0, y: liked ? -6 : 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.15 }}
+                    exit={{ opacity: 0, y: liked ? 6 : -6 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-xs font-medium tabular-nums leading-none"
                 >
                     {count}
                 </motion.span>

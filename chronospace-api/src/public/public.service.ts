@@ -8,13 +8,23 @@ export class PublicService {
 
   async getFeed(query: FeedQueryDto) {
     const page = query.page ?? 1;
-    const limit = query.limit ?? 10;
+    const limit = query.limit ?? 9;
     const skip = (page - 1) * limit;
+    const search = query.search?.trim();
 
-    // Single optimized query — avoids N+1 with _count aggregation
+    const where = {
+      isPublished: true,
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' as const } },
+          { summary: { contains: search, mode: 'insensitive' as const } },
+        ],
+      }),
+    };
+
     const [blogs, total] = await this.prisma.$transaction([
       this.prisma.blog.findMany({
-        where: { isPublished: true },
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
@@ -24,15 +34,11 @@ export class PublicService {
           slug: true,
           summary: true,
           createdAt: true,
-          user: {
-            select: { id: true, username: true },
-          },
-          _count: {
-            select: { likes: true, comments: true },
-          },
+          user: { select: { id: true, username: true } },
+          _count: { select: { likes: true, comments: true } },
         },
       }),
-      this.prisma.blog.count({ where: { isPublished: true } }),
+      this.prisma.blog.count({ where }),
     ]);
 
     return {
@@ -42,7 +48,7 @@ export class PublicService {
         slug: blog.slug,
         summary: blog.summary,
         publishedAt: blog.createdAt,
-        user: blog.user,
+        author: blog.user, // ✅ Fixed: was 'user', now 'author' to match FeedBlog type
         likeCount: blog._count.likes,
         commentCount: blog._count.comments,
       })),
@@ -69,12 +75,8 @@ export class PublicService {
         createdAt: true,
         updatedAt: true,
         isPublished: true,
-        user: {
-          select: { id: true, username: true },
-        },
-        _count: {
-          select: { likes: true, comments: true },
-        },
+        user: { select: { id: true, username: true } },
+        _count: { select: { likes: true, comments: true } },
       },
     });
 
@@ -93,6 +95,7 @@ export class PublicService {
       user: blog.user,
       likeCount: blog._count.likes,
       commentCount: blog._count.comments,
+      _count: blog._count,
     };
   }
 }

@@ -2,26 +2,28 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare } from 'lucide-react';
 import { useComments } from '@/lib/hooks/useComments';
-import { timeAgo } from '@/lib/utils';
-import { CommentForm } from './CommentForm';
+import { CommentItem } from '@/components/social/CommentItem';
+import { CommentForm } from '@/components/social/CommentForm';
 
-interface Props { blogId: string; }
+interface CommentListProps {
+    blogId: string;
+}
 
-export function CommentList({ blogId }: Props) {
+export function CommentList({ blogId }: CommentListProps) {
     const { data: comments, isLoading } = useComments(blogId);
 
     return (
-        <section className="space-y-6">
+        <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-bold">
+                <MessageSquare className="w-4 h-4 text-primary" />
+                <h2 className="text-base font-semibold text-foreground">
                     Comments
-                    {!isLoading && comments && (
-                        <span className="ml-2 text-sm font-normal text-muted-foreground">
+                    {comments?.length ? (
+                        <span className="ml-2 text-xs font-normal text-muted-foreground">
                             ({comments.length})
                         </span>
-                    )}
+                    ) : null}
                 </h2>
             </div>
 
@@ -31,55 +33,37 @@ export function CommentList({ blogId }: Props) {
             {/* Comment list */}
             {isLoading ? (
                 <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="animate-pulse flex gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-muted flex-shrink-0" />
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="flex gap-3 animate-pulse">
+                            <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0" />
                             <div className="flex-1 space-y-2">
-                                <div className="h-3 bg-muted rounded w-24" />
-                                <div className="h-3 bg-muted rounded w-full" />
-                                <div className="h-3 bg-muted rounded w-3/4" />
+                                <div className="h-3 w-28 bg-muted rounded" />
+                                <div className="h-3 w-full bg-muted rounded" />
+                                <div className="h-3 w-3/4 bg-muted rounded" />
                             </div>
                         </div>
                     ))}
                 </div>
             ) : comments?.length === 0 ? (
-                <div className="text-center py-12 rounded-2xl border border-dashed border-border">
-                    <MessageSquare className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">No comments yet. Be the first!</p>
+                <div className="py-8 text-center text-sm text-muted-foreground">
+                    No comments yet. Be the first to start the conversation.
                 </div>
             ) : (
                 <AnimatePresence initial={false}>
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                         {comments?.map((comment, i) => (
                             <motion.div
                                 key={comment.id}
-                                initial={{ opacity: 0, y: 16 }}
+                                initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.04 }}
-                                className="flex gap-3 group"
+                                transition={{ delay: i * 0.05 }}
                             >
-                                {/* Avatar */}
-                                <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary text-xs font-bold">
-                                    {comment.user.username[0].toUpperCase()}
-                                </div>
-
-                                {/* Content bubble */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-3">
-                                        <div className="flex items-center gap-2 mb-1.5">
-                                            <span className="text-sm font-semibold">@{comment.user.username}</span>
-                                            <span className="text-xs text-muted-foreground">{timeAgo(comment.createdAt)}</span>
-                                        </div>
-                                        <p className="text-sm leading-relaxed text-foreground/85 whitespace-pre-wrap break-words">
-                                            {comment.content}
-                                        </p>
-                                    </div>
-                                </div>
+                                <CommentItem comment={comment} />
                             </motion.div>
                         ))}
                     </div>
                 </AnimatePresence>
             )}
-        </section>
+        </div>
     );
 }
