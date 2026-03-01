@@ -2,12 +2,12 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { formatDistanceToNow, format } from "date-fns";
 
-// export function cn(...inputs: ClassValue[]) {
-//   return twMerge(clsx(inputs));
-// }
+// ── Core ──────────────────────────────────────────────
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
-// ─── Date Helpers ──────────────────────────────────────────────
-
+// ── Date helpers ──────────────────────────────────────
 export function formatDate(date: string | Date | null | undefined): string {
   if (!date) return "Unknown date";
   const d = new Date(date);
@@ -22,8 +22,7 @@ export function timeAgo(date: string | Date | null | undefined): string {
   return formatDistanceToNow(d, { addSuffix: true });
 }
 
-// ─── Text Helpers ──────────────────────────────────────────────
-
+// ── Text helpers ──────────────────────────────────────
 export function readingTime(text: string | null | undefined): string {
   if (!text) return "1 min read";
   const words = text.trim().split(/\s+/).length;
@@ -34,15 +33,22 @@ export function readingTime(text: string | null | undefined): string {
 export function getInitials(name: string | null | undefined): string {
   if (!name) return "?";
   return name
-    .split(/\s+/)
+    .split(" ")
     .map((w) => w[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
 }
 
-export function cn(
-  ...classes: (string | boolean | undefined | null)[]
-): string {
-  return classes.filter(Boolean).join(" ");
+export function truncate(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trimEnd() + "…";
+}
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }

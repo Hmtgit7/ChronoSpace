@@ -4,7 +4,7 @@ const PROTECTED = ["/dashboard"];
 const AUTH_ONLY = ["/login", "/register"];
 
 export function proxy(req: NextRequest) {
-  const token = req.cookies.get("chronospace_token")?.value;
+  const token = req.cookies.get("chronospacetoken")?.value;
   const { pathname } = req.nextUrl;
 
   const isProtected = PROTECTED.some((p) => pathname.startsWith(p));
@@ -13,9 +13,11 @@ export function proxy(req: NextRequest) {
   if (isProtected && !token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
+
   if (isAuthOnly && token) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
+
   return NextResponse.next();
 }
 
