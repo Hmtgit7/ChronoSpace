@@ -29,6 +29,33 @@ interface BlogBySlugRow extends FeedBlogRow {
   isPublished: boolean;
 }
 
+/** Tag shape returned by public API (matches Prisma Tag select). */
+export interface TagPayload {
+  id: string;
+  name: string;
+  label: string;
+  color: string;
+}
+
+/** Feed blog row shape (matches Prisma findMany select). */
+interface FeedBlogRow {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  createdAt: Date;
+  user: { id: string; username: string };
+  _count: { likes: number; comments: number };
+  tags: Array<{ tag: TagPayload }>;
+}
+
+/** Blog-by-slug row shape (matches Prisma findUnique select). */
+interface BlogBySlugRow extends FeedBlogRow {
+  content: string;
+  updatedAt: Date;
+  isPublished: boolean;
+}
+
 @Injectable()
 export class PublicService {
   constructor(private readonly prisma: PrismaService) {}
@@ -156,12 +183,12 @@ export class PublicService {
 
   async getAllTags(): Promise<TagPayload[]> {
     // Prisma client may be unresolved when generated output is not in scope
-    /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+
     const tags = (await this.prisma.tag.findMany({
       orderBy: { label: 'asc' },
       select: { id: true, name: true, label: true, color: true },
     })) as TagPayload[];
-    /* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+
     return tags;
   }
 }

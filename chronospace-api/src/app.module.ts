@@ -10,7 +10,7 @@ import { BlogsModule } from './blogs/blogs.module';
 import { PublicModule } from './public/public.module';
 import { JobsModule } from './jobs/jobs.module';
 import { HealthModule } from './health/health.module';
-
+import { TagsModule } from './tags/tags.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -53,6 +53,7 @@ import { HealthModule } from './health/health.module';
     PublicModule,
     JobsModule,
     HealthModule,
+    TagsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

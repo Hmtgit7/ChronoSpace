@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Tag as TagIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTags } from "@/lib/hooks/useFeed";
+import { useTags } from "@/lib/hooks/useTags";
 import type { Tag } from "@/types";
 
 interface Props {

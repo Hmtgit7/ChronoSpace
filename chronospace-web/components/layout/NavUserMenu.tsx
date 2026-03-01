@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import type { User } from "@/types";
