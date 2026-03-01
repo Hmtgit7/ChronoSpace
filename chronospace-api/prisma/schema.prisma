@@ -20,12 +20,15 @@ model User {
   email        String    @unique
   username     String    @unique
   passwordHash String
+  displayName  String?   // optional full name
+  bio          String?   // optional short bio
   createdAt    DateTime  @default(now())
 
   blogs    Blog[]
   likes    Like[]
   comments Comment[]
 }
+
 
 model Blog {
   id          String   @id @default(cuid())
