@@ -63,6 +63,7 @@ export interface FeedBlog {
   author: Pick<User, "id" | "username">;
   likeCount: number;
   commentCount: number;
+  tags: Tag[];
 }
 
 export interface FeedMeta {
@@ -101,8 +102,7 @@ export interface ApiError {
   timestamp: string;
 }
 
-// Add to existing types
-
+// ─── Tag ────────────────────────────────────────────────────────
 export interface Tag {
   id: string;
   name: string; // slug e.g. "technology"
@@ -110,17 +110,27 @@ export interface Tag {
   color: string; // hex e.g. "#6366f1"
 }
 
-// Update FeedBlog
-export interface FeedBlog {
+export type ViewMode = "grid" | "list";
+
+// ─── Profile ────────────────────────────────────────────────────
+export interface AuthorProfile {
   id: string;
-  title: string;
-  slug: string;
-  summary: string | null;
-  publishedAt: string;
-  author: Pick<User, "id" | "username">;
-  likeCount: number;
-  commentCount: number;
-  tags: Tag[]; // ← ADD
+  username: string;
+  displayName: string | null;
+  bio: string | null;
+  joinedAt: string;
+  stats: {
+    publishedBlogs: number;
+    totalLikes: number;
+    totalComments: number;
+  };
 }
 
-export type ViewMode = "grid" | "list";
+export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  displayName: string | null;
+  bio: string | null;
+  createdAt: string;
+}

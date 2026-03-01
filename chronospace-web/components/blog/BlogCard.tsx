@@ -26,12 +26,21 @@ export function BlogCard({ blog, index }: Props) {
 
             {/* Author row */}
             <div className="flex items-center gap-2 mb-4">
+
                 <div className="w-7 h-7 rounded-full bg-primary/15 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary text-xs font-bold uppercase">
                     {authorName[0]}
                 </div>
-                <span className="text-sm font-medium text-foreground/80 leading-none">
+                {/* <span className="text-sm font-medium text-foreground/80 leading-none">
                     {authorName}
-                </span>
+                </span> */}
+                <Link
+                    href={`/u/${blog.author?.username}`}
+                    onClick={(e) => e.stopPropagation()} // prevent card click
+                    className="font-medium text-foreground hover:text-primary transition-colors"
+                >
+                    {blog.author?.username}
+                </Link>
+
                 <span className="text-muted-foreground/30">·</span>
                 <span className="text-xs text-muted-foreground">{timeAgo(blog.publishedAt)}</span>
             </div>

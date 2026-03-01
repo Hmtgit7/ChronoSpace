@@ -1,6 +1,7 @@
 import { Calendar, Clock, MessageSquare } from "lucide-react";
 import { formatDate, readingTime, getInitials } from "@/lib/utils";
 import type { Blog } from "@/types";
+import Link from "next/link";
 
 interface Props {
     blog: Blog;
@@ -18,7 +19,15 @@ export function BlogPageMeta({ blog, commentCount }: Props) {
                 <div className="w-7 h-7 rounded-full bg-primary/15 border border-primary/20 flex items-center justify-center text-primary text-xs font-bold uppercase">
                     {getInitials(authorName)}
                 </div>
-                <span className="font-medium text-foreground/80">{authorName}</span>
+                {/* <span className="font-medium text-foreground/80">{authorName}</span> */}
+                <Link
+                    href={`/u/${blog.user?.username}`}
+                    onClick={(e) => e.stopPropagation()} // prevent card click
+                    className="font-medium text-foreground hover:text-primary transition-colors"
+                >
+                    {/* {blog.author?.username} */}
+                    {authorName}
+                </Link>
             </div>
 
             <span className="text-border">·</span>
