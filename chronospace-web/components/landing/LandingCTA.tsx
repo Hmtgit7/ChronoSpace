@@ -1,44 +1,49 @@
-'use client';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { ArrowRight, Feather } from 'lucide-react';
+"use client";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowRight, Feather, Rss } from "lucide-react";
 
 export function LandingCTA() {
     return (
-        <section className="py-24 px-4 sm:px-6">
-            <div className="max-w-4xl mx-auto">
+        <section className="py-24 px-4 sm:px-6 border-t border-border/50">
+            <div className="max-w-3xl mx-auto">
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="relative rounded-3xl p-12 text-center overflow-hidden border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent"
+                    className="relative rounded-3xl border border-border bg-card p-12 sm:p-16 text-center overflow-hidden"
                 >
-                    {/* Glow */}
-                    <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/20 to-violet-500/10 blur-3xl opacity-50" />
+                    {/* Subtle top accent line */}
+                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
-                    <div className="w-14 h-14 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center mx-auto mb-6">
-                        <Feather className="w-7 h-7 text-primary" />
+                    {/* Icon */}
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
+                        <Feather className="w-6 h-6 text-primary" />
                     </div>
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+
+                    <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">
                         Ready to write your first story?
                     </h2>
-                    <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-                        Join ChronoSpace today. Create your account in seconds, no credit card needed.
+                    <p className="text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
+                        Join ChronoSpace today. Create your account in seconds — no credit card,
+                        no ads, no noise.
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                         <Link
                             href="/register"
-                            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:bg-primary/90 transition-all"
+                            className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold shadow-md shadow-primary/25 hover:shadow-primary/40 hover:bg-primary/90 transition-all"
                         >
                             <Feather className="w-4 h-4" />
-                            Create Free Account
-                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            Start Writing Free
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                         </Link>
                         <Link
                             href="/feed"
-                            className="inline-flex items-center justify-center px-8 py-4 rounded-2xl border border-border hover:bg-secondary transition-colors font-semibold"
+                            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-border font-semibold hover:bg-secondary transition-colors"
                         >
-                            Browse Public Feed
+                            <Rss className="w-4 h-4" />
+                            Explore Feed
                         </Link>
                     </div>
                 </motion.div>
