@@ -38,6 +38,12 @@ export class BlogsService {
         slug,
         content: dto.content,
         isPublished: dto.isPublished ?? false,
+        // Connect tags if provided
+        ...(dto.tagIds?.length && {
+          tags: {
+            create: dto.tagIds.map((tagId) => ({ tagId })),
+          },
+        }),
       },
       select: {
         id: true,
@@ -49,6 +55,11 @@ export class BlogsService {
         createdAt: true,
         updatedAt: true,
         user: { select: { id: true, username: true } },
+        tags: {
+          select: {
+            tag: { select: { id: true, name: true, label: true, color: true } },
+          },
+        },
       },
     });
 
@@ -124,6 +135,13 @@ export class BlogsService {
         ...(dto.title && { title: dto.title, slug }),
         ...(dto.content !== undefined && { content: dto.content }),
         ...(dto.isPublished !== undefined && { isPublished: dto.isPublished }),
+        // Replace tags completely if provided
+        ...(dto.tagIds !== undefined && {
+          tags: {
+            deleteMany: {},
+            create: dto.tagIds.map((tagId) => ({ tagId })),
+          },
+        }),
       },
       select: {
         id: true,
@@ -134,6 +152,11 @@ export class BlogsService {
         isPublished: true,
         createdAt: true,
         updatedAt: true,
+        tags: {
+          select: {
+            tag: { select: { id: true, name: true, label: true, color: true } },
+          },
+        },
       },
     });
 

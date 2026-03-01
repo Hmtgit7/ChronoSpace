@@ -1,5 +1,7 @@
-import { IsOptional, IsInt, Min, Max } from 'class-validator';
+import { IsOptional, IsInt, Min, Max, IsString, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
+
+export type FeedSort = 'latest' | 'trending';
 
 export class FeedQueryDto {
   @IsOptional()
@@ -13,5 +15,14 @@ export class FeedQueryDto {
   @IsInt()
   @Min(1)
   @Max(50)
-  limit?: number = 10;
+  limit?: number = 9;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['latest', 'trending'])
+  sort?: FeedSort = 'latest';
+
+  @IsOptional()
+  @IsString()
+  tag?: string; // tag name slug e.g. "technology"
 }

@@ -34,6 +34,7 @@ export interface Blog {
   updatedAt: string;
   publishedAt?: string;
   user?: Pick<User, "id" | "username">;
+  tags: Tag[];
   _count?: {
     likes: number;
     comments: number;
@@ -99,3 +100,27 @@ export interface ApiError {
   path: string;
   timestamp: string;
 }
+
+// Add to existing types
+
+export interface Tag {
+  id: string;
+  name: string; // slug e.g. "technology"
+  label: string; // display e.g. "Technology"
+  color: string; // hex e.g. "#6366f1"
+}
+
+// Update FeedBlog
+export interface FeedBlog {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  publishedAt: string;
+  author: Pick<User, "id" | "username">;
+  likeCount: number;
+  commentCount: number;
+  tags: Tag[]; // ← ADD
+}
+
+export type ViewMode = "grid" | "list";

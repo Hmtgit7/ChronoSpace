@@ -13,6 +13,12 @@ export class PublicController {
     return this.publicService.getFeed(query);
   }
 
+  @Get('tags')
+  @Throttle({ medium: { ttl: 60000, limit: 60 } })
+  getAllTags() {
+    return this.publicService.getAllTags();
+  }
+
   @Get('blogs/:slug')
   @Throttle({ medium: { ttl: 60000, limit: 60 } })
   getBlogBySlug(@Param('slug') slug: string) {

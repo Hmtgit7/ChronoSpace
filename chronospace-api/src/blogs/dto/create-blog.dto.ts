@@ -5,6 +5,8 @@ import {
   MinLength,
   MaxLength,
   IsOptional,
+  IsArray,
+  ArrayMaxSize,
 } from 'class-validator';
 
 export class CreateBlogDto {
@@ -22,4 +24,10 @@ export class CreateBlogDto {
   @IsBoolean()
   @IsOptional()
   isPublished?: boolean = false;
+
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMaxSize(5)
+  @IsOptional()
+  tagIds?: string[];
 }
