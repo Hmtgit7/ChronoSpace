@@ -39,6 +39,7 @@ export default function EditBlogPage({ params }: PageProps) {
         <BlogEditor
             mode="edit"
             initialData={blog}
+            blogId={id}
             onSubmit={handleSubmit}
             isLoading={update.isPending}
             error={update.error ? getApiError(update.error) : null}

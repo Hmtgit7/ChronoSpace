@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,6 +14,9 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { Blog } from "@/types";
 import { TagSelector } from "./TagSelector";
+import { AutosaveIndicator } from "./AutosaveIndicator";
+import { RestoreDraftBanner } from "./RestoreDraftBanner";
+import { AutosaveStatus, useAutosave } from "@/lib/hooks/useAutosave";
 
 const schema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters").max(200),
@@ -30,13 +33,14 @@ interface Props {
     isLoading: boolean;
     error?: string | null;
     mode: "create" | "edit";
+    blogId?: string | null;
 }
 
 type EditorTab = "write" | "preview";
 // Track which button triggered submission
 type SubmitIntent = "draft" | "publish" | null;
 
-export function BlogEditor({ initialData, onSubmit, isLoading, error, mode }: Props) {
+export function BlogEditor({ initialData, onSubmit, isLoading, error, mode, blogId }: Props) {
     const [tab, setTab] = useState<EditorTab>("write");
     const [saved, setSaved] = useState(false);
     const [intent, setIntent] = useState<SubmitIntent>(null);
@@ -46,6 +50,7 @@ export function BlogEditor({ initialData, onSubmit, isLoading, error, mode }: Pr
         handleSubmit,
         watch,
         setValue,
+        reset,
         formState: { errors, isDirty },
     } = useForm<BlogFormData>({
         resolver: zodResolver(schema),
@@ -75,6 +80,53 @@ export function BlogEditor({ initialData, onSubmit, isLoading, error, mode }: Pr
     // isDraftLoading / isPublishLoading — only the clicked button spins
     const isDraftLoading = isLoading && intent === "draft";
     const isPublishLoading = isLoading && intent === "publish";
+
+
+    //AUTOSAVE DRAFTS
+    const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>({
+        type: "idle",
+    });
+    const [showRestoreBanner, setShowRestoreBanner] = useState(false);
+    const [restoredChecked, setRestoredChecked] = useState(false);
+
+    // Stable save callback for autosave hook
+    const handleAutosave = useCallback(
+        async (data: BlogFormData) => {
+            await onSubmit({ ...data, isPublished: false });
+        },
+        [onSubmit]
+    );
+
+    // Wire autosave hook
+    const { getLocalBackup, clearLocalBackup } = useAutosave({
+        blogId: blogId ?? null,
+        data: watch() as BlogFormData,
+        isDirty,
+        isPublished: watch("isPublished"),
+        onSave: handleAutosave,
+        onStatusChange: setAutosaveStatus,
+    });
+
+    // Check for local backup on mount (edit mode only)
+    useEffect(() => {
+        if (restoredChecked || !blogId) return;
+        setRestoredChecked(true);
+        const backup = getLocalBackup();
+        if (backup) setShowRestoreBanner(true);
+    }, [blogId, getLocalBackup, restoredChecked]);
+
+    const handleRestore = () => {
+        const backup = getLocalBackup();
+        if (!backup) return;
+        reset(backup.data);
+        clearLocalBackup();
+        setShowRestoreBanner(false);
+    };
+
+    const handleDismissRestore = () => {
+        clearLocalBackup();
+        setShowRestoreBanner(false);
+    };
 
     return (
         <div className="max-w-5xl mx-auto">
@@ -147,6 +199,20 @@ export function BlogEditor({ initialData, onSubmit, isLoading, error, mode }: Pr
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* Autosave indicator */}
+
+                <AnimatePresence>
+                    {showRestoreBanner && (
+                        <RestoreDraftBanner
+                            savedAt={getLocalBackup()?.savedAt ?? ""}
+                            onRestore={handleRestore}
+                            onDismiss={handleDismissRestore}
+                        />
+                    )}
+                </AnimatePresence>
+
+
 
                 {/* Title */}
                 <motion.div
@@ -284,6 +350,7 @@ export function BlogEditor({ initialData, onSubmit, isLoading, error, mode }: Pr
                         <span>{wordCount} words</span>
                         <span>·</span>
                         <span>{readTime} min read</span>
+
                         {isPublished && (
                             <>
                                 <span>·</span>
@@ -293,6 +360,7 @@ export function BlogEditor({ initialData, onSubmit, isLoading, error, mode }: Pr
                                 </span>
                             </>
                         )}
+                        {blogId && <AutosaveIndicator status={autosaveStatus} />}
                     </div>
 
                     <div className="flex items-center gap-2 w-full sm:w-auto">
